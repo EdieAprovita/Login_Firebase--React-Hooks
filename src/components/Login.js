@@ -1,7 +1,8 @@
 import React, { useState, useCallback } from 'react';
 import { auth, db } from '../firebase';
+import { withRouter } from 'react-router-dom';
 
-const Login = () => {
+const Login = (props) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState(null);
@@ -36,12 +37,17 @@ const Login = () => {
     try {
       const res = await auth.signInWithEmailAndPassword(email, password);
       console.log(res.user);
+      setEmail('');
+      setPassword('');
+      setError(null);
+      props.history.push('/admin');
     } catch (error) {
       console.log(error);
       if (error.code === 'auth/user-not-found') setError(error.message);
       if (error.code === 'auth/wrong-password') setError(error.message);
     }
-  }, [email, password]);
+  }, [email, password, props.history]);
+
   const registrar = useCallback(async () => {
     try {
       const res = await auth.createUserWithEmailAndPassword(email, password);
@@ -53,12 +59,13 @@ const Login = () => {
       setEmail('');
       setPassword('');
       setError(null);
+      props.history.push('/admin');
     } catch (error) {
       console.log(error);
       if (error.code === 'auth/invalid-email') setError(error.message);
       if (error.code === 'auth/email-already-in-use') setError(error.message);
     }
-  }, [email, password]);
+  }, [email, password, props.history]);
 
   return (
     <div className='mt-5'>
@@ -103,4 +110,4 @@ const Login = () => {
   );
 };
 
-export default Login;
+export default withRouter(Login);
