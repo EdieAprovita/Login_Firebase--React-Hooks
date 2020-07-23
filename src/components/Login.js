@@ -1,9 +1,11 @@
-import React, { useState } from 'react';
+import React, { useState, useCallback } from 'react';
+import { auth, db } from '../firebase';
 
 const Login = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState(null);
+
   const [esRegistro, setEsRegistro] = useState(true);
 
   const procesData = (e) => {
@@ -22,7 +24,29 @@ const Login = () => {
     }
 
     setError(null);
+
+    if (esRegistro) {
+      registrar();
+    }
   };
+
+  const registrar = useCallback(async () => {
+    try {
+      const res = await auth.createUserWithEmailAndPassword(email, password);
+      await db.collection('users').doc(res.user.email).set({
+        email: res.user.email,
+        uid: res.user.uid,
+      });
+
+      setEmail('');
+      setPassword('');
+      setError(null);
+    } catch (error) {
+      console.log(error);
+      if (error.code === 'auth/invalid-email') setError(error.message);
+      if (error.code === 'auth/email-already-in-use') setError(error.message);
+    }
+  }, [email, password]);
 
   return (
     <div className='mt-5'>
