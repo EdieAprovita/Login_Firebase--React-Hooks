@@ -27,9 +27,21 @@ const Login = () => {
 
     if (esRegistro) {
       registrar();
+    } else {
+      login();
     }
   };
 
+  const login = useCallback(async () => {
+    try {
+      const res = await auth.signInWithEmailAndPassword(email, password);
+      console.log(res.user);
+    } catch (error) {
+      console.log(error);
+      if (error.code === 'auth/user-not-found') setError(error.message);
+      if (error.code === 'auth/wrong-password') setError(error.message);
+    }
+  }, [email, password]);
   const registrar = useCallback(async () => {
     try {
       const res = await auth.createUserWithEmailAndPassword(email, password);
