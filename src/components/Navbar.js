@@ -1,7 +1,15 @@
 import React from 'react';
 import { Link, NavLink } from 'react-router-dom';
+import { auth } from '../firebase';
 
-const Navbar = () => {
+import { withRouter } from 'react-router-dom';
+
+const Navbar = (props) => {
+  const logout = () => {
+    auth.signOut().then(() => {
+      props.history.push('/login');
+    });
+  };
   return (
     <div className='navbar navbar-dark bg-dark'>
       <Link to='/' className='navbar-brand'>
@@ -12,16 +20,24 @@ const Navbar = () => {
           <NavLink className='btn btn-dark mr-2' to='/' exact>
             Inicio
           </NavLink>
-          <NavLink className='btn btn-dark mr-2' to='/admin'>
-            Admin
-          </NavLink>
-          <NavLink className='btn btn-dark mr-2' to='/login'>
-            Login
-          </NavLink>
+          {props.firebaseUser !== null ? (
+            <NavLink className='btn btn-dark mr-2' to='/admin'>
+              Admin
+            </NavLink>
+          ) : null}
+          {props.firebaseUser !== null ? (
+            <button className='btn btn-dark' onClick={() => logout()}>
+              Logout
+            </button>
+          ) : (
+            <NavLink className='btn btn-dark mr-2' to='/login'>
+              Login
+            </NavLink>
+          )}
         </div>
       </div>
     </div>
   );
 };
 
-export default Navbar;
+export default withRouter(Navbar);
