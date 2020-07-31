@@ -1,15 +1,15 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { db } from '../firebase';
 
 import moment from 'moment';
 
 const Firestore = (props) => {
-  const [tareas, setTareas] = React.useState([]);
-  const [tarea, setTarea] = React.useState('');
-  const [modoEdicion, setModoEdicion] = React.useState(false);
-  const [id, setId] = React.useState('');
+  const [tareas, setTareas] = useState([]);
+  const [tarea, setTarea] = useState('');
+  const [modoEdicion, setModoEdicion] = useState(false);
+  const [id, setId] = useState('');
 
-  React.useEffect(() => {
+  useEffect(() => {
     const obtenerDatos = async () => {
       try {
         const data = await db.collection(props.user.uid).get();
